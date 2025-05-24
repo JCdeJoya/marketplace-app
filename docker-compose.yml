@@ -1,10 +1,48 @@
 services:
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: marketplace_user
+      POSTGRES_PASSWORD: supersecret
+      POSTGRES_DB: marketplace_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: always
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    restart: always
   backend:
     build:
       context: ./backend
     container_name: backend
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
     restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

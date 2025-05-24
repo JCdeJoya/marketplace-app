@@ -3,5 +3,13 @@ uvicorn[standard]
 sqlalchemy
 psycopg2-binary
 pydantic-settings
+pydantic[email]
 python-dotenv
 redis
+python-jose[cryptography] 
+passlib[bcrypt] 
+pillow
+python-multipart
+aiofiles
+pytest
+httpx
