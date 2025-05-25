@@ -12,22 +12,17 @@ class ImageService:
     def __init__(self):
         os.makedirs(self.UPLOAD_DIR, exist_ok=True)
     
-    async def save_image(self, file: UploadFile) -> Tuple[str, str]:
+    async def save_image(self, file: UploadFile, product_id: int) -> str:
         """Save image and create thumbnail, return (image_url, thumbnail_url)"""
-        # Generate unique filename
-        ext = file.filename.split('.')[-1]
-        filename = f"{uuid.uuid4()}.{ext}"
-        image_path = os.path.join(self.UPLOAD_DIR, filename)
-        thumb_path = os.path.join(self.UPLOAD_DIR, f"thumb_{filename}")
+        if not os.path.exists(self.UPLOAD_DIR):
+            os.makedirs(self.UPLOAD_DIR)
+            
+        file_ext = os.path.splitext(file.filename)[1]
+        filename = f"product_{product_id}{file_ext}"
+        filepath = os.path.join(self.UPLOAD_DIR, filename)
         
-        # Save original
-        async with aiofiles.open(image_path, 'wb') as f:
+        async with aiofiles.open(filepath, 'wb') as out_file:
             content = await file.read()
-            await f.write(content)
-        
-        # Create thumbnail
-        with Image.open(image_path) as img:
-            img.thumbnail(self.THUMBNAIL_SIZE)
-            img.save(thumb_path)
-        
-        return f"/images/{filename}", f"/images/thumb_{filename}"
+            await out_file.write(content)
+            
+        return f"/images/{filename}"

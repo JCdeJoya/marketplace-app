@@ -28,10 +28,10 @@ def create_category(
 def read_categories(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
-    # Keep this endpoint public since users need to browse categories
-    categories = crud.get_categories(db=db, skip=skip, limit=limit)
+    # Public endpoint - no auth required
+    categories = crud.category.get_categories(db, skip=skip, limit=limit)
     return categories
 
 # Add update endpoint with admin protection

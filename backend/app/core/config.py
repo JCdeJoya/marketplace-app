@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Marketplace API"
-    API_V1_STR: str
+    API_V1_STR: str = "/api/v1"
 
     POSTGRES_SERVER: str
     POSTGRES_PORT: str
@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     REDIS_URL: str
 
     SECRET_KEY: str
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
 
     model_config = SettingsConfigDict(env_file=".env")
 
@@ -28,5 +29,5 @@ class Settings(BaseSettings):
             f"{self.POSTGRES_PORT}/"
             f"{self.POSTGRES_DB}"
         )
-    
+
 settings = Settings()

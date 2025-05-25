@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from app.db.session import get_db
-from app.api.dependencies import get_current_user
+from app.api.dependencies import get_current_user, get_current_user_optional
 from app.schemas.cart import Cart, CartItemCreate
 from app.schemas import order as order_schemas
 from app.crud import order as order_crud
@@ -15,17 +15,19 @@ cart_service = CartService()
 
 @router.get("/", response_model=Cart)
 async def get_cart(
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    return await cart_service.get_cart(current_user.id)
+    user_id = current_user.id if current_user else "anonymous"
+    return await cart_service.get_cart(user_id)
 
 @router.post("/items", response_model=Cart)
 async def add_to_cart(
     item: CartItemCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    return await cart_service.add_item(current_user.id, item, db)
+    user_id = current_user.id if current_user else "anonymous"
+    return await cart_service.add_item(user_id, item, db)
 
 @router.post("/checkout", response_model=order_schemas.OrderOut)
 async def checkout(

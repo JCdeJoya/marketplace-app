@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:15
+    image: postgres:13
     container_name: postgres
     environment:
       POSTGRES_USER: marketplace_user
@@ -12,33 +12,87 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketplace_user -d marketplace_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   redis:
-    image: redis:alpine
+    image: redis:6
     container_name: redis
     ports:
       - "6379:6379"
     networks:
       - app-network
-    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
+      - API_V1_STR=/api/v1
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=marketplace_db
+      - POSTGRES_USER=marketplace_user
+      - POSTGRES_PASSWORD=supersecret
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=pepperoni_secret
+      - PORT=8000
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+
+  admin-frontend:
+    build:
+      context: ./admin-frontend
+      dockerfile: Dockerfile
+    container_name: admin-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
     ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
+      - "3001:3001"
     depends_on:
-      - db
-      - redis
+      backend:
+        condition: service_healthy
     networks:
       - app-network
-    restart: always
+
+  user-frontend:
+    build:
+      context: ./user-frontend
+      dockerfile: Dockerfile
+    container_name: user-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
 
 networks:
   app-network:

@@ -1,13 +1,18 @@
-from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import text
 from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
+import logging
 
 from app.core.config import settings
 from app.db.session import engine
 from app.db.base import Base
 from app.api.api import api_router
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,3 +43,24 @@ def read_root():
         return {"message": "Database connection failed."}
 
     return {"message": "Welcome to Marketplace API"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Request: {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response: {response.status_code}")
+    return response
