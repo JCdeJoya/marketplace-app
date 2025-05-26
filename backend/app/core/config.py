@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3001"
+    FRONTEND_URL: str = "http://localhost:3000"  # <-- Add this line
 
     model_config = SettingsConfigDict(env_file=".env")
 

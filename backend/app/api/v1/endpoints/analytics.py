@@ -3,7 +3,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import Order, OrderItem, Product
-from app.api.dependencies import require_admin
+from app.api.deps import require_admin
 from datetime import datetime, timedelta
 
 router = APIRouter()

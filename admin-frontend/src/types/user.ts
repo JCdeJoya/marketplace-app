@@ -4,7 +4,6 @@ export interface User {
     full_name: string;
     is_admin: boolean;
     is_active: boolean;
-    created_at: string;
 }
 
 export interface UserFormData {

@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.api.dependencies import get_current_user_optional
 
 from app import schemas, crud
 from app.db.session import get_db
-from app.api.dependencies import get_current_user, require_admin
+from app.api.deps import get_current_user, require_admin, get_current_user_optional
 from app.db.models import User
 from app.services.image import ImageService
 

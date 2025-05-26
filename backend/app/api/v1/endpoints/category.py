@@ -4,7 +4,7 @@ from typing import List
 
 from app import crud
 from app.db.session import get_db
-from app.api.dependencies import get_current_user, require_admin
+from app.api.deps import get_current_user, require_admin
 from app.schemas.category import Category, CategoryCreate, CategoryUpdate
 from app.db.models import User
 
@@ -17,11 +17,6 @@ def create_category(
     admin: User = Depends(require_admin)
 ):
     # Only admin users should be able to create categories
-    if not current_user.is_admin:
-        raise HTTPException(
-            status_code=403,
-            detail="Not enough permissions to create categories"
-        )
     return crud.create_category(db=db, category=category)
 
 @router.get("/", response_model=List[Category])

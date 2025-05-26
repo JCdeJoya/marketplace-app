@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.db.session import get_db
-from app.api.dependencies import get_current_user, get_current_user_optional
+from app.api.deps import get_current_user, get_current_user_optional
 from app.schemas.cart import Cart, CartItemCreate
 from app.schemas import order as order_schemas
 from app.crud import order as order_crud

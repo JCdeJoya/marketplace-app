@@ -27,7 +27,6 @@ export default function Navbar() {
                         >
                             Products
                         </Link>
-                        
                         {user ? (
                             <>
                                 <Link
@@ -84,6 +83,12 @@ export default function Navbar() {
                                     className={`text-sm ${pathname === '/register' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                                 >
                                     Register
+                                </Link>
+                                <Link
+                                    href="/forgot-password"
+                                    className={`text-sm ${pathname === '/forgot-password' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    Forgot Password
                                 </Link>
                             </>
                         )}

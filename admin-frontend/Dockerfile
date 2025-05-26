@@ -2,7 +2,7 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies with all devDependencies needed for build
+# Install dependencies (including devDependencies)
 COPY package*.json ./
 RUN npm ci
 
@@ -12,28 +12,31 @@ COPY . .
 # Build the app
 RUN npm run build
 
+# --- Runner stage ---
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV production
-ENV PORT 3001
+ENV PORT 3001 
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy necessary files from builder
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy only necessary files from builder
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/.env.local .env.local
+COPY --from=builder /app/.env.example .env.example
 
-# Set proper permissions
-RUN chown -R nextjs:nodejs .
+# Install only production dependencies
+RUN npm ci --omit=dev
 
 USER nextjs
 
 EXPOSE 3001
 
-# Use the standalone server
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

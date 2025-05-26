@@ -35,17 +35,16 @@ RUN adduser --disabled-password --no-create-home appuser
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 
+# Install Python packages from wheels
+RUN pip install --no-cache-dir --find-links=/wheels -r requirements.txt
+
 # Copy application code
 COPY ./app ./app
+COPY ./tests ./tests
 COPY init_db.py .
-COPY .env .
 
-# Install dependencies and set permissions
-RUN pip install --no-cache /wheels/* && \
-    rm -rf /wheels && \
-    chown -R appuser:appuser /app
+# Copy .env.example and .env (if present)
+COPY .env.example .env.example
+COPY .env .env
 
-USER appuser
-
-# Run database initialization and start the application
-CMD python init_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000
+CMD ["/bin/sh", "-c", "[ -f .env ] || cp .env.example .env && python init_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"]

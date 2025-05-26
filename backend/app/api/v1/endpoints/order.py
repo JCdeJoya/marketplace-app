@@ -5,7 +5,7 @@ from typing import List
 from app.schemas import order as order_schemas
 from app.crud import order as order_crud
 from app.db.session import get_db
-from app.api.dependencies import get_current_user, require_admin
+from app.api.deps import get_current_user, require_admin
 from app.db.models import User
 
 router = APIRouter()
