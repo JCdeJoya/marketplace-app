@@ -5,12 +5,12 @@
 #     assert isinstance(res.json(), list)
 
 def test_get_products(client):
-    response = client.get("/api/products")
+    response = client.get("/api/v1/products")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
 def test_get_product_by_id(client):
-    response = client.get("/api/products/1")
+    response = client.get("/api/v1/products/1")
     assert response.status_code == 200
     assert "id" in response.json()
 
@@ -21,7 +21,7 @@ def test_create_product(client):
         "description": "Test description",
         "category_id": 1
     }
-    response = client.post("/api/products", json=product_data)
+    response = client.post("/api/v1/products", json=product_data)
     assert response.status_code == 201
 
 def test_product_crud_operations(client, admin_token_headers):

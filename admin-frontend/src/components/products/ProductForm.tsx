@@ -83,7 +83,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
     }, [imagePreview]);
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 text-gray-900">
             <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                     Name

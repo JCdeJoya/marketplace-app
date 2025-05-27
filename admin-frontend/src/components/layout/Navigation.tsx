@@ -10,6 +10,7 @@ const navigation = [
   { name: 'Categories', href: '/categories' },
   { name: 'Orders', href: '/orders' },
   { name: 'Users', href: '/users' },
+  { name: 'Analytics', href: '/analytics' }, // Added Analytics page
 ];
 
 export default function Navigation() {
@@ -22,7 +23,7 @@ export default function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold">Admin Panel</span>
+              <span className="text-2xl font-bold text-gray-900">Admin Panel</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {navigation.map((item) => (

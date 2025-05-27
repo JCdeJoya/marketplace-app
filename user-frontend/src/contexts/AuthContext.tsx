@@ -39,7 +39,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             formData.append('username', credentials.email);
             formData.append('password', credentials.password);
 
-            // Use absolute URL
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -54,6 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             const data = await response.json();
             localStorage.setItem('token', data.access_token);
+            // Set cookie for middleware
+            document.cookie = `token=${data.access_token}; path=/`;
 
             const userData = await fetchApi('/users/me');
             setUser(userData);
@@ -88,6 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = () => {
         localStorage.removeItem('token');
+        // Remove cookie for middleware
+        document.cookie = 'token=; Max-Age=0; path=/';
         setUser(null);
         router.push('/login');
         toast.success('Logged out successfully');

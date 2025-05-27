@@ -39,6 +39,7 @@ cd marketplace-app
 ### 2. Copy and configure environment variables
 
 ```sh
+cp .env.example .env
 cp backend/.env.example backend/.env
 cp admin-frontend/.env.example admin-frontend/.env.local
 cp user-frontend/.env.example user-frontend/.env.local
@@ -56,6 +57,19 @@ docker compose up --build
 - **User Frontend:** http://localhost:3000
 - **Admin Frontend:** http://localhost:3001
 - **API Docs:** http://localhost:8000/docs
+
+---
+
+## Default Admin User
+
+When you start the backend for the first time, a default admin user is automatically created for you:
+
+- **Email:** `admin@example.com`
+- **Password:** `admin123`
+
+> **Important:**  
+> For security, change this password and email in production.  
+> You can update or remove the default admin in the database after initial setup.
 
 ---
 

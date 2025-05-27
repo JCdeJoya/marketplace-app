@@ -52,7 +52,7 @@ export default function UserForm({ user, onSubmit, onClose }: UserFormProps) {
                             type="email"
                             id="email"
                             required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
@@ -66,7 +66,7 @@ export default function UserForm({ user, onSubmit, onClose }: UserFormProps) {
                             type="text"
                             id="full_name"
                             required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
                             value={formData.full_name}
                             onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                         />
@@ -81,7 +81,7 @@ export default function UserForm({ user, onSubmit, onClose }: UserFormProps) {
                                 type="password"
                                 id="password"
                                 required={!user}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             />
@@ -92,7 +92,7 @@ export default function UserForm({ user, onSubmit, onClose }: UserFormProps) {
                         <input
                             type="checkbox"
                             id="is_admin"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 text-gray-900"
                             checked={formData.is_admin}
                             onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
                         />

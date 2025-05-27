@@ -1,3 +1,7 @@
+from fastapi import HTTPException, status
+from app.db.models import User
+from app.core.security import verify_password
+
 def test_login_fail(client):
     response = client.post("/api/v1/auth/login", data={"username": "fail@test.com", "password": "wrong"})
     assert response.status_code == 400
@@ -20,3 +24,12 @@ def test_user_signup_and_login(client, current_timestamp):
     assert res.status_code == 200
     data = res.json()
     assert "access_token" in data
+
+async def authenticate_user(username: str, password: str):
+    user = await User.get_by_email(username)
+    if not user or not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password"
+        )
+    return user

@@ -56,7 +56,7 @@ export default function OrdersPage() {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
-                        className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
                     >
                         <option value="all">All Orders</option>
                         <option value="pending">Pending</option>

@@ -1,4 +1,4 @@
-import { StatCard } from '@/types/dashboard';
+import type { StatCard } from '@/types/dashboard';
 
 interface StatsCardsProps {
     stats: StatCard[];
@@ -33,4 +33,18 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             ))}
         </div>
     );
+}
+
+type StatCardProps = {
+  title: string;
+  value: string | number;
+};
+
+export function StatCard({ title, value }: StatCardProps) {
+  return (
+    <div className="bg-white rounded shadow p-4 flex flex-col items-center">
+      <div className="text-gray-500 text-sm">{title}</div>
+      <div className="text-2xl font-bold text-gray-900">{value}</div>
+    </div>
+  );
 }

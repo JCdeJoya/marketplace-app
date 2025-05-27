@@ -22,8 +22,7 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     setLoading(true);
-    const res = await fetchApi("/users");
-    const data = await res.json();
+    const data = await fetchApi("/users");
     setUsers(data);
     setLoading(false);
   };

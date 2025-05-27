@@ -38,6 +38,7 @@ export default function CategoriesPage() {
       } else {
         await fetchApi('/categories', {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
       }
@@ -66,7 +67,7 @@ export default function CategoriesPage() {
     <AdminLayout>
       {showForm ? (
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-900">
             {editingCategory ? 'Edit Category' : 'Add Category'}
           </h2>
           <CategoryForm

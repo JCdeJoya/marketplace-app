@@ -14,7 +14,7 @@ def test_password_reset_flow(client, current_timestamp):
     assert res.status_code == 200
 
     # Generate token (simulate backend logic)
-    from app.core.password_reset import generate_reset_token
+    from app.crud.password_reset import generate_reset_token
     token = generate_reset_token(email)
 
     # Confirm password reset

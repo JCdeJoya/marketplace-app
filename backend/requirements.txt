@@ -12,6 +12,7 @@ pillow==10.2.0
 python-multipart==0.0.7
 aiofiles==23.2.1
 pytest==8.0.0
+pytest-cov==4.1.0
 httpx==0.26.0
 alembic==1.13.1
 email-validator==2.1.0.post1

@@ -1,1 +1,1 @@
-from . import product, user, order
+from . import product, user, order, category, password_reset

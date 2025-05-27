@@ -27,48 +27,86 @@ ChartJS.register(
   PointElement
 );
 
+type SalesData = {
+  labels: string[];
+  values: number[];
+};
+
+type AnalyticsMetrics = {
+  totalRevenue: number;
+  totalOrders: number;
+  totalProducts: number;
+  totalCustomers: number;
+  salesData: SalesData;
+};
+
 export default function AnalyticsDashboard() {
-  const [metrics, setMetrics] = useState({
-    totalSales: 0,
-    orderCount: 0,
-    averageOrderValue: 0,
-    topProducts: [],
+  const [metrics, setMetrics] = useState<AnalyticsMetrics>({
+    totalRevenue: 0,
+    totalOrders: 0,
+    totalProducts: 0,
+    totalCustomers: 0,
     salesData: {
       labels: [],
       values: []
     }
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      const response = await fetch('/api/analytics');
-      const data = await response.json();
-      setMetrics(data);
+      try {
+        const [statsRes, salesRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/analytics/stats`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/analytics/sales-data`)
+        ]);
+        const stats = await statsRes.json();
+        const salesData = await salesRes.json();
+        setMetrics({
+          ...stats,
+          salesData
+        });
+      } catch (error) {
+        // Fallback to dummy data so navigation/UI still works
+        setMetrics({
+          totalRevenue: 0,
+          totalOrders: 0,
+          totalProducts: 0,
+          totalCustomers: 0,
+          salesData: {
+            labels: ['Day 1', 'Day 2', 'Day 3'],
+            values: [0, 0, 0]
+          }
+        });
+        console.error('Failed to fetch analytics data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchMetrics();
   }, []);
 
+  if (loading) return <div>Loading...</div>;
+
   return (
     <AdminLayout>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-white rounded-lg shadow">
-          <h3 className="text-lg font-medium">Total Sales</h3>
-          <p className="text-2xl font-bold">${metrics.totalSales}</p>
-        </div>
-        
-        <div className="p-4 bg-white rounded-lg shadow">
-          <h3 className="text-lg font-medium">Sales Trend</h3>
-          <Line
-            data={{
-              labels: metrics.salesData.labels,
-              datasets: [{
-                label: 'Sales',
-                data: metrics.salesData.values,
-                borderColor: 'rgb(59, 130, 246)',
-                tension: 0.1
-              }]
-            }}
-          />
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-white rounded-lg shadow">
+            <h3 className="text-lg font-medium">Total Sales</h3>
+            <p className="text-2xl font-bold">${metrics.totalRevenue}</p>
+            <Line
+              data={{
+                labels: metrics.salesData.labels,
+                datasets: [{
+                  label: 'Sales',
+                  data: metrics.salesData.values,
+                  borderColor: 'rgb(59, 130, 246)',
+                  tension: 0.1
+                }]
+              }}
+            />
+          </div>
         </div>
       </div>
     </AdminLayout>

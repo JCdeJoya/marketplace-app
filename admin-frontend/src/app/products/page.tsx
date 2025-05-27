@@ -54,7 +54,7 @@ export default function ProductsPage() {
     <AdminLayout>
       {showForm ? (
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-6">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-900">
             {editingProduct ? 'Edit Product' : 'Add Product'}
           </h2>
           <ProductForm

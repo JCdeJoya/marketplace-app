@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.db.models import Order, OrderItem, Product
+from app.db.models import Order, OrderItem, Product, User
 from app.api.deps import require_admin
 from datetime import datetime, timedelta
 
@@ -38,4 +38,43 @@ async def get_dashboard_metrics(
             }
             for p in top_products
         ]
+    }
+
+@router.get("/sales-data")
+async def get_sales_data(
+    db: Session = Depends(get_db),
+    admin = Depends(require_admin)
+):
+    from app.db.models import Order
+    days = 30
+    today = datetime.now().date()
+    sales_by_day = (
+        db.query(
+            func.date(Order.created_at).label("date"),
+            func.sum(Order.total_price).label("total")
+        )
+        .filter(Order.created_at >= today - timedelta(days=days))
+        .group_by(func.date(Order.created_at))
+        .order_by(func.date(Order.created_at))
+        .all()
+    )
+    labels = [str(row.date) for row in sales_by_day]
+    values = [float(row.total) for row in sales_by_day]
+    return {"labels": labels, "values": values}
+
+@router.get("/stats")
+def get_stats(
+    db: Session = Depends(get_db),
+    admin = Depends(require_admin)
+):
+    total_users = db.query(User).count()
+    total_orders = db.query(Order).count()
+    total_products = db.query(Product).count()
+    total_sales = db.query(func.sum(Order.total_price)).scalar() or 0
+
+    return {
+        "totalCustomers": total_users,
+        "totalOrders": total_orders,
+        "totalProducts": total_products,
+        "totalRevenue": float(total_sales),
     }

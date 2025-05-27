@@ -8,7 +8,7 @@ from app.schemas.category import CategoryCreate
 
 def test_create_category(client: TestClient):
     category_data = {"name": "Electronics", "description": "Electronic items"}
-    response = client.post("/api/v1/category/", json=category_data)
+    response = client.post("/api/v1/categories/", json=category_data)
     assert response.status_code == 200
     content = response.json()
     assert content["name"] == category_data["name"]
