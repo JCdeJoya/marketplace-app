@@ -73,17 +73,17 @@ async def upload_product_image(
     admin: User = Depends(require_admin)
 ):
     """Upload product image and create thumbnail"""
-    product = crud.product.get(db, id=product_id)
+    product = crud.product.get_product(db, product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    image_url, thumb_url = await image_service.save_image(file)
+    image_url, thumb_url = await image_service.save_image(file, product_id)
     
     # Update product with image URLs
-    product = crud.product.update(
+    product = crud.product.update_product(
         db,
-        db_obj=product,
-        obj_in={"image_url": image_url, "thumbnail_url": thumb_url}
+        product_id,
+        updates=schemas.ProductUpdate(image_url=image_url, thumbnail_url=thumb_url)
     )
     
     return {"image_url": image_url, "thumbnail_url": thumb_url}

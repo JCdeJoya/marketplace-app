@@ -21,7 +21,7 @@ def update_product(db: Session, product_id: int, updates: ProductCreate):
     db_product = get_product(db, product_id)
     if not db_product:
         return None
-    for field, value in updates.dict().items():
+    for field, value in updates.dict(exclude_unset=True).items():
         setattr(db_product, field, value)
     db.commit()
     db.refresh(db_product)

@@ -29,10 +29,6 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 # Mount uploads directory
 app.mount("/images", StaticFiles(directory="uploads/images"), name="images")
 
-@app.on_event("startup")
-def on_startup():
-    Base.metadata.create_all(bind=engine)
-
 @app.get("/")
 def read_root():
     # Optional test DB connection (will raise on error)

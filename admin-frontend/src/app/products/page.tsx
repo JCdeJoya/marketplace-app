@@ -6,6 +6,7 @@ import { Product, ProductFormData } from '@/types/product';
 import { fetchApi } from '@/lib/api';
 import Loading from '@/components/ui/Loading';
 import ProductForm from '@/components/products/ProductForm';
+import toast from 'react-hot-toast';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -13,7 +14,6 @@ export default function ProductsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>();
 
-  // Move fetchProducts outside useEffect
   const fetchProducts = async () => {
     try {
       const data = await fetchApi('/products');
@@ -29,18 +29,42 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  const handleSubmit = async (formData: ProductFormData): Promise<Product> => {
-    const response = await fetchApi('/products', {
-      method: 'POST',
-      body: JSON.stringify(formData),
-    });
-    return response as Product;
+  const handleSubmit = async (data: ProductFormData) => {
+    const token = localStorage.getItem('token');
+    try {
+      let savedProduct: Product;
+      if (editingProduct) {
+        savedProduct = await fetchApi(`/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`, // ✅ Use header auth
+          },
+          body: JSON.stringify(data),
+        });
+      } else {
+        savedProduct = await fetchApi('/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+      }
+      setShowForm(false);
+      setEditingProduct(undefined);
+      toast.success('Product saved successfully!');
+      await fetchProducts();
+      return savedProduct;
+    } catch (error) {
+      console.error('Failed to save product:', error);
+      throw error;
+    }
   };
 
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         await fetchApi(`/products/${id}`, { method: 'DELETE' });
+        toast.success('Product deleted successfully!');
         await fetchProducts();
       } catch (error) {
         console.error('Failed to delete product:', error);
@@ -90,6 +114,9 @@ export default function ProductsPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Id
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Name
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -107,10 +134,13 @@ export default function ProductsPage() {
                   {products.map((product) => (
                     <tr key={product.id}>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                        {product.id}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                         {product.name}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        ${product.price.toFixed(2)}
+                        ${product.price}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {product.stock}

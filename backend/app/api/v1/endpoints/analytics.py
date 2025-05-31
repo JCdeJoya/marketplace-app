@@ -67,10 +67,11 @@ def get_stats(
     db: Session = Depends(get_db),
     admin = Depends(require_admin)
 ):
+    orders = db.query(Order).all()
     total_users = db.query(User).count()
     total_orders = db.query(Order).count()
     total_products = db.query(Product).count()
-    total_sales = db.query(func.sum(Order.total_price)).scalar() or 0
+    total_sales = sum(order.total_price for order in orders)
 
     return {
         "totalCustomers": total_users,

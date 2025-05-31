@@ -4,7 +4,7 @@ from app.core.security import verify_password
 
 def test_login_fail(client):
     response = client.post("/api/v1/auth/login", data={"username": "fail@test.com", "password": "wrong"})
-    assert response.status_code == 400
+    assert response.status_code == 401
 
 def test_user_signup_and_login(client, current_timestamp):
     # Signup

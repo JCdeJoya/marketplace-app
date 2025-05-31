@@ -4,6 +4,14 @@ const nextConfig = {
   images: {
     domains: ['localhost'], // Add any image domains you need
   },
+  remotePatterns: [
+    {
+      protocol: 'http',
+      hostname: 'localhost',
+      port: '8000',
+      pathname: '/images/**',
+    },
+  ],
 };
 
 module.exports = nextConfig;

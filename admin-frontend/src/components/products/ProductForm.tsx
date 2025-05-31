@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { Product, ProductFormData } from '@/types/product';
 import { fetchApi } from '@/lib/api';
 
@@ -13,6 +12,7 @@ interface ProductFormProps {
 
 export default function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
     const [formData, setFormData] = useState<ProductFormData>({
+        id: product?.id || 0,
         name: product?.name || '',
         description: product?.description || '',
         price: product?.price || 0,
@@ -22,7 +22,9 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
     const [categories, setCategories] = useState<Array<{ id: number; name: string }>>([]);
     const [loading, setLoading] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(product?.image_url || null);
+    const [imagePreview, setImagePreview] = useState<string | null>(
+        product?.thumbnail_url ? `${process.env.NEXT_PUBLIC_API_URL}${product.thumbnail_url}` : null
+    );
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -57,7 +59,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                 const formDataObj = new FormData();
                 formDataObj.append('file', imageFile);
                 
-                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${savedProduct.id}/image`, {
+                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${savedProduct.id}/image`, {
                     method: 'POST',
                     body: formDataObj,
                     headers: {
@@ -150,7 +152,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                     id="category"
                     required
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.category_id}
+                    defaultValue={formData.category_id}
                     onChange={(e) => setFormData({ ...formData, category_id: parseInt(e.target.value) })}
                 >
                     <option value="">Select a category</option>
@@ -169,7 +171,7 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
                 <div className="mt-1 flex items-center space-x-4">
                     <div className="w-32 h-32 border rounded-lg overflow-hidden">
                         {imagePreview ? (
-                            <Image
+                            <img
                                 src={imagePreview}
                                 alt="Preview"
                                 width={128}

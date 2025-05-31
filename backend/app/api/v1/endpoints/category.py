@@ -17,7 +17,7 @@ def create_category(
     admin: User = Depends(require_admin)
 ):
     # Only admin users should be able to create categories
-    return crud.create_category(db=db, category=category)
+    return crud.category.create_category(db=db, category=category)
 
 @router.get("/", response_model=List[Category])
 def read_categories(
@@ -37,7 +37,7 @@ def update_category(
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin)
 ):
-    db_category = crud.update_category(db=db, category_id=category_id, category=category)
+    db_category = crud.category.update_category(db=db, category_id=category_id, updates=category)
     if not db_category:
         raise HTTPException(status_code=404, detail="Category not found")
     return db_category
@@ -49,6 +49,6 @@ def delete_category(
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin)
 ):
-    if not crud.delete_category(db=db, category_id=category_id):
+    if not crud.category.delete_category(db=db, category_id=category_id):
         raise HTTPException(status_code=404, detail="Category not found")
     return {"message": "Category deleted successfully"}

@@ -5,6 +5,7 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import Loading from "@/components/ui/Loading";
 import UserForm from "@/components/users/UserForm";
 import { fetchApi } from "@/lib/api";
+import toast from "react-hot-toast";
 
 type User = {
   id: number;
@@ -39,12 +40,14 @@ export default function UsersPage() {
       headers: { "Content-Type": "application/json" },
     });
     setUsers(users.map(u => u.id === user.id ? { ...u, is_active: !u.is_active } : u));
+    toast.success(`User ${user.is_active ? 'deactivated' : 'activated'} successfully!`);
   };
 
   const deleteUser = async (user: User) => {
     if (!confirm(`Delete user ${user.email}?`)) return;
     await fetchApi(`/users/${user.id}`, { method: "DELETE" });
     setUsers(users.filter(u => u.id !== user.id));
+    toast.success(`User ${user.email} deleted successfully!`);
   };
 
   if (loading) return <Loading />;
@@ -159,6 +162,7 @@ export default function UsersPage() {
               setShowForm(false);
               setEditingUser(null);
               await fetchUsers();
+              toast.success('User saved successfully!');
             } catch (error) {
               console.error('Failed to save user:', error);
             }

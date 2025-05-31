@@ -5,7 +5,7 @@ import { Category, CategoryFormData } from '@/types/category';
 
 interface CategoryFormProps {
     category?: Category;
-    onSubmit: (data: CategoryFormData) => Promise<void>;
+    onSubmit: (data: CategoryFormData) => Promise<Category>;
     onCancel: () => void;
 }
 

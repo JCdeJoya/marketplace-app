@@ -6,6 +6,7 @@ import { Category, CategoryFormData } from '@/types/category';
 import { fetchApi } from '@/lib/api';
 import Loading from '@/components/ui/Loading';
 import CategoryForm from '@/components/categories/CategoryForm';
+import toast from 'react-hot-toast';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -29,14 +30,20 @@ export default function CategoriesPage() {
   }, []);
 
   const handleSubmit = async (data: CategoryFormData) => {
+    const token = localStorage.getItem('token');
     try {
+      let savedCategory: Category;
       if (editingCategory) {
-        await fetchApi(`/categories/${editingCategory.id}`, {
+        savedCategory = await fetchApi(`/categories/${editingCategory.id}`, {
           method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`, // ✅ Use header auth
+          },
           body: JSON.stringify(data),
         });
       } else {
-        await fetchApi('/categories', {
+        savedCategory = await fetchApi('/categories', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -44,9 +51,12 @@ export default function CategoriesPage() {
       }
       setShowForm(false);
       setEditingCategory(undefined);
+      toast.success('Category saved successfully!');
       await fetchCategories();
+      return savedCategory;
     } catch (error) {
       console.error('Failed to save category:', error);
+      throw error;
     }
   };
 
@@ -54,6 +64,7 @@ export default function CategoriesPage() {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
         await fetchApi(`/categories/${id}`, { method: 'DELETE' });
+        toast.success('Category deleted successfully!');
         await fetchCategories();
       } catch (error) {
         console.error('Failed to delete category:', error);
@@ -104,6 +115,9 @@ export default function CategoriesPage() {
                     <thead className="bg-gray-50">
                       <tr>
                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                          Id
+                        </th>
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                           Name
                         </th>
                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -117,6 +131,9 @@ export default function CategoriesPage() {
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {categories.map((category) => (
                         <tr key={category.id}>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                            {category.id}
+                          </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                             {category.name}
                           </td>

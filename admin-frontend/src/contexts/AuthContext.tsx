@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useRouter } from 'next/navigation';
 import type { User } from '@/types/user';
 import type { LoginCredentials, AuthResponse } from '@/types/auth';
+import toast from 'react-hot-toast';
 
 type AuthContextType = {
   user: User | null;
@@ -31,11 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Load user on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
+    /* console.log('Token from localStorage:', token); */
     if (!token) {
       setIsLoading(false);
       return;
     }
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (res) => {
@@ -45,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(userData);
       })
       .catch(() => {
-        setUser(null);
-        localStorage.removeItem('token');
+        toast.error('Session expired. Please log in again.');
+        logout();
       })
       .finally(() => setIsLoading(false));
   }, []);
@@ -56,11 +58,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     formData.append('username', credentials.username);
     formData.append('password', credentials.password);
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData,
-      credentials: 'include',
     });
 
     if (!response.ok) throw new Error('Login failed');
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('token', data.access_token);
     document.cookie = `token=${data.access_token}; path=/`;
 
-    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/me`, {
       headers: { Authorization: `Bearer ${data.access_token}` },
     });
 
@@ -86,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setUser(userData);
-    router.push('/');
+    return;
   };
 
   const logout = () => {
@@ -94,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     document.cookie = 'token=; Max-Age=0; path=/'; // Remove cookie
     setUser(null);
     router.push('/login');
+    toast.success('Logged out successfully');
   };
 
   return (

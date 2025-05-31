@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/v1`;
 
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint}`;
@@ -15,7 +15,8 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   });
 
   if (!response.ok) {
-    throw new Error('API request failed');
+    const errorText = await response.text();
+    throw new Error(`API request failed: ${response.status} ${errorText}`);
   }
 
   return response.json();

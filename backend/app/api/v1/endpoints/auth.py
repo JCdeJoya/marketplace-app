@@ -29,8 +29,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             "access_token": access_token,
             "token_type": "bearer"
         }
+    except HTTPException:
+        raise  # re-raise known HTTP errors as-is
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail="Internal server error"
         )

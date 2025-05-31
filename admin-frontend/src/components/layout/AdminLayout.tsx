@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from './Navigation';
@@ -10,12 +10,13 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push('/login');
+      /* router.push('/login'); */
+      logout();
     }
   }, [user, isLoading, router]);
 

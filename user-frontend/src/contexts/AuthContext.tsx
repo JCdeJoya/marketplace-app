@@ -26,7 +26,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (token) {
             fetchApi('/users/me')
                 .then(data => setUser(data))
-                .catch(() => localStorage.removeItem('token'))
+                .catch(() => {
+                    toast.error('Session expired. Please log in again.');
+                    logout();
+                })
                 .finally(() => setLoading(false));
         } else {
             setLoading(false);
@@ -39,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             formData.append('username', credentials.email);
             formData.append('password', credentials.password);
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

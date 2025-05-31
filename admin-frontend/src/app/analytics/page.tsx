@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import AdminLayout from '@/components/layout/AdminLayout';
+import { fetchApi } from '@/lib/api';
 
 // Register ChartJS components
 ChartJS.register(
@@ -57,8 +58,8 @@ export default function AnalyticsDashboard() {
     const fetchMetrics = async () => {
       try {
         const [statsRes, salesRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/analytics/stats`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/analytics/sales-data`)
+          fetchApi(`/analytics/stats`),
+          fetchApi(`/analytics/sales-data`)
         ]);
         const stats = await statsRes.json();
         const salesData = await salesRes.json();
