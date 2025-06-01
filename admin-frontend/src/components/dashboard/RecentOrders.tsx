@@ -32,6 +32,9 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Total
                                     </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -40,8 +43,15 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             #{order.id}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {order.user_email}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex flex-col">
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {order.shipping_full_name}
+                                                </div>
+                                                <div className="text-sm text-gray-500">
+                                                    {order.user_email}
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -53,7 +63,10 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            ${order.total_amount.toFixed(2)}
+                                            ${order.total_price.toFixed(2)}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {new Date(order.created_at).toLocaleDateString()}
                                         </td>
                                     </tr>
                                 ))}

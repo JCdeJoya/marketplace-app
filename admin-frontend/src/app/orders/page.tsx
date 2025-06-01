@@ -28,15 +28,12 @@ export default function OrdersPage() {
         fetchOrders();
     }, []);
 
-    const handleStatusUpdate = async (orderId: number, status: OrderStatus, tracking_number?: string) => {
+    // Simplify handleStatusUpdate to only refresh orders
+    const handleStatusUpdate = async () => {
         try {
-            await fetchApi(`/orders/${orderId}/status`, {
-                method: 'PUT',
-                body: JSON.stringify({ status, tracking_number }),
-            });
-            await fetchOrders();
+            await fetchOrders(); 
         } catch (error) {
-            console.error('Failed to update order status:', error);
+            console.error('Failed to refresh orders:', error);
         }
     };
 
@@ -101,7 +98,7 @@ export default function OrdersPage() {
                                             </span>
                                         </td>
                                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                            ${order.total_amount.toFixed(2)}
+                                            ${order.total_price.toFixed(2)}
                                         </td>
                                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                             {new Date(order.created_at).toLocaleDateString()}

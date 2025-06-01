@@ -84,12 +84,12 @@ export default function Navbar() {
                                 >
                                     Register
                                 </Link>
-                                <Link
+                                {/* <Link
                                     href="/forgot-password"
                                     className={`text-sm ${pathname === '/forgot-password' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                                 >
                                     Forgot Password
-                                </Link>
+                                </Link> */}
                             </>
                         )}
                     </div>

@@ -2,7 +2,6 @@
 
 import { useCart } from '@/contexts/CartContext';
 import Loading from '@/components/ui/Loading';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
@@ -33,12 +32,11 @@ export default function CartPage() {
                 {cart.items.map((item) => (
                     <div key={item.product_id} className="flex items-center space-x-4 border-b pb-4">
                         <div className="flex-shrink-0 w-24 h-24 relative">
-                            {item.product.image_url ? (
-                                <Image
-                                    src={item.product.image_url}
+                            {item.product.thumbnail_url ? (
+                                <img
+                                    src={`${process.env.NEXT_PUBLIC_API_URL}${item.product.thumbnail_url}`}
                                     alt={item.product.name}
-                                    fill
-                                    className="object-cover rounded-md"
+                                    className="w-full h-full object-cover rounded-md"
                                 />
                             ) : (
                                 <div className="w-full h-full bg-gray-100 rounded-md flex items-center justify-center">

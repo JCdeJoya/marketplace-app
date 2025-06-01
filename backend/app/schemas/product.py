@@ -7,6 +7,7 @@ class ProductBase(BaseModel):
     description: str | None = None
     price: Decimal
     stock: int
+    category_id: int | None = None
     image_url: str | None = None
     thumbnail_url: str | None = None
 
@@ -18,6 +19,7 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     price: Optional[Decimal] = None
     stock: Optional[int] = None
+    category_id: Optional[int] = None
     image_url: Optional[str] = None
     thumbnail_url: Optional[str] = None
 

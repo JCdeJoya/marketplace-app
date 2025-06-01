@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Order, OrderStatus } from '@/types/order';
+import { fetchApi } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 interface OrderDetailsProps {
     order: Order;
@@ -17,18 +19,32 @@ export default function OrderDetails({ order, onClose, onStatusUpdate }: OrderDe
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        
         try {
+            // Update the order status in the backend
+            await fetchApi(`/orders/${order.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    status,
+                    tracking_number: trackingNumber
+                }),
+            });
+
+            // Notify parent to refresh the orders list
             await onStatusUpdate(order.id, status, trackingNumber);
+            
+            toast.success('Order updated successfully');
             onClose();
         } catch (error) {
             console.error('Failed to update order:', error);
+            toast.error('Failed to update order');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 text-gray-900">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full mx-4">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-semibold">Order #{order.id}</h2>
@@ -53,16 +69,16 @@ export default function OrderDetails({ order, onClose, onStatusUpdate }: OrderDe
                             {order.items.map((item) => (
                                 <li key={item.id} className="py-3 flex justify-between">
                                     <div>
-                                        <p className="text-sm font-medium">{item.product_name}</p>
+                                        <p className="text-sm font-medium">{item.product.name}</p>
                                         <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                                     </div>
-                                    <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                                    <p className="text-sm font-medium">${(item.product.price * item.quantity).toFixed(2)}</p>
                                 </li>
                             ))}
                         </ul>
                         <div className="mt-3 flex justify-between border-t pt-3">
                             <p className="text-sm font-medium">Total</p>
-                            <p className="text-sm font-medium">${order.total_amount.toFixed(2)}</p>
+                            <p className="text-sm font-medium">${order.total_price.toFixed(2)}</p>
                         </div>
                     </div>
 

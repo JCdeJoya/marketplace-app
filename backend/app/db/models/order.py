@@ -11,6 +11,14 @@ class Order(Base):
     status = Column(String, default="pending")
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    shipping_full_name = Column(String, nullable=False)
+    shipping_address = Column(String, nullable=False)
+    shipping_city = Column(String, nullable=False)
+    shipping_postal_code = Column(String, nullable=False)
+    shipping_phone = Column(String, nullable=False)
+
+    tracking_number = Column(String, nullable=True)
+
     user = relationship("User", back_populates="orders")
     items = relationship("OrderItem", back_populates="order")
     

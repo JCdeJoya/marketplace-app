@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { Product } from '@/types/product';
 import { fetchApi } from '@/lib/api';
 import { useCart } from '@/contexts/CartContext';
@@ -50,13 +49,12 @@ export default function ProductDetail({ id }: { id: string }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
                     {product.image_url ? (
-                        <Image
-                            src={product.image_url}
+                        <img
+                            src={`${process.env.NEXT_PUBLIC_API_URL}${product.thumbnail_url}`}
                             alt={product.name}
                             width={600}
                             height={600}
                             className="h-full w-full object-cover object-center"
-                            priority
                         />
                     ) : (
                         <div className="h-full w-full flex items-center justify-center bg-gray-100">
@@ -67,7 +65,7 @@ export default function ProductDetail({ id }: { id: string }) {
 
                 <div className="space-y-6">
                     <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                    <p className="text-xl font-medium text-gray-900">${product.price.toFixed(2)}</p>
+                    <p className="text-xl font-medium text-gray-900">${product.price}</p>
                     <p className="text-gray-700">{product.description}</p>
 
                     <div className="space-y-4">

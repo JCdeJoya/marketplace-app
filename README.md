@@ -6,145 +6,111 @@ A full-stack e-commerce marketplace with user and admin frontends, built with Fa
 
 ## Features
 
-- User registration, login, password reset
+- User authentication (login/register)
 - Product catalog with search and filtering
-- Shopping cart and checkout
-- Order history
-- Admin dashboard for managing products, categories, users, and orders
-- Analytics dashboard
-- API documentation (Swagger/OpenAPI)
-- Dockerized for easy deployment
-
----
+- Shopping cart functionality
+- Order management
+- Admin dashboard
+  - Product management
+  - Category management
+  - Order tracking
+  - User management
+- Responsive design
+- Image upload and processing
+- Real-time inventory tracking
 
 ## Tech Stack
 
-- **Backend:** FastAPI, SQLAlchemy, PostgreSQL, Redis
-- **Frontend:** Next.js (React, TypeScript)
-- **Admin Frontend:** Next.js (React, TypeScript)
-- **Testing:** Pytest, Jest, Cypress
-- **Containerization:** Docker, Docker Compose
+- **Backend:**
+  - FastAPI
+  - SQLAlchemy
+  - PostgreSQL
+  - Redis
+  - JWT Authentication
 
----
+- **Frontend & Admin:**
+  - Next.js 13+ (App Router)
+  - TypeScript
+  - TailwindCSS
+  - React Context
+  - React Hot Toast
 
-## Quick Start
+- **Testing:**
+  - Jest
+  - React Testing Library
+  - Cypress
+  - Pytest
 
-### 1. Clone the repository
+- **DevOps:**
+  - Docker
+  - Docker Compose
+  - GitHub Actions (if implemented)
 
-```sh
+## Setup
+
+1. Clone and install:
+```bash
 git clone user/marketplace-app
 cd marketplace-app
 ```
 
-### 2. Copy and configure environment variables
-
-```sh
+2. Environment setup:
+```bash
 cp .env.example .env
 cp backend/.env.example backend/.env
 cp admin-frontend/.env.example admin-frontend/.env.local
 cp user-frontend/.env.example user-frontend/.env.local
 ```
-Edit the `.env` and `.env.local` files as needed (e.g., set `SECRET_KEY`).
 
-### 3. Build and start all services
-
-```sh
+3. Start services:
+```bash
 docker compose up --build
 ```
 
-### 4. Access the applications
+4. Access:
+- User Frontend: http://localhost:3000
+- Admin Frontend: http://localhost:3001 
+- API Docs: http://localhost:8000/docs
 
-- **User Frontend:** http://localhost:3000
-- **Admin Frontend:** http://localhost:3001
-- **API Docs:** http://localhost:8000/docs
+## Default Admin Account
+- Email: admin@example.com
+- Password: admin123
 
----
+## Testing
 
-## Default Admin User
-
-When you start the backend for the first time, a default admin user is automatically created for you:
-
-- **Email:** `admin@example.com`
-- **Password:** `admin123`
-
-> **Important:**  
-> For security, change this password and email in production.  
-> You can update or remove the default admin in the database after initial setup.
-
----
-
-## Running Tests
-
-### Backend
-
-```sh
-docker compose exec backend bash
-pytest --cov=app
+Backend:
+```bash
+docker compose exec backend pytest
 ```
 
-### Frontend
-
-```sh
-cd admin-frontend
-npm test
-
-cd ../user-frontend
-npm test
-```
-
-### End-to-End (E2E) Tests
-
-```sh
+Frontend:
+```bash
 cd user-frontend
-npx cypress open
+npm test
+
+cd ../admin-frontend
+npm test
 ```
 
----
-
-## API Documentation
-
-- Visit [http://localhost:8000/docs](http://localhost:8000/docs) for interactive Swagger UI.
-
----
-
-## Project Structure
-
-```
-marketplace-app/
-├── backend/           # FastAPI backend
-├── admin-frontend/    # Admin dashboard (Next.js)
-├── user-frontend/     # User-facing frontend (Next.js)
-├── docker-compose.yml
-└── ...
+E2E Tests:
+```bash
+cd user-frontend
+npm run cypress:open
 ```
 
----
+## Contributing
 
-## Environment Variables
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open pull request
 
-- **backend/.env.example:** Backend config (Postgres, Redis, secret key, etc.)
-- **admin-frontend/.env.example:** Admin frontend config (API URL)
-- **user-frontend/.env.example:** User frontend config (API URL)
+## License
 
-**Always copy `.env.example` to `.env` or `.env.local` and edit as needed.**
-
----
-
-## Deployment Notes
-
-- For production, set strong secrets and production database credentials in your `.env` files.
-- You may want to set up HTTPS, a production-ready database, and a production Redis instance.
-- For scaling, consider using a process manager (e.g., Gunicorn for FastAPI) and a reverse proxy (e.g., Nginx).
-
----
-
-## Troubleshooting
-
-- If you see errors about missing `.env` or `.env.local`, ensure you copied the example files and edited them.
-- If Docker Compose warns about missing variables, create a `.env` in the project root with the required variables.
-
----
+MIT License
 
 ## Author
 
-[Jian Carlo M. de Joya] — [dejoyajiancarlo@gmail.com]
+Jian Carlo M. de Joya
+dejoyajiancarlo@gmail.com

@@ -24,6 +24,22 @@ def read_products(
 ):
     return crud.product.get_products(db, skip=skip, limit=limit)
 
+@router.get("/search", response_model=List[schemas.ProductOut])
+def search_products(
+    query: str = None,
+    category_id: int = None,
+    min_price: float = None,
+    max_price: float = None,
+    db: Session = Depends(get_db)
+):
+    filters = {
+        "query": query,
+        "category_id": category_id,
+        "min_price": min_price,
+        "max_price": max_price
+    }
+    return crud.product.search_products(db=db, filters=filters)
+
 @router.get("/{product_id}", response_model=schemas.ProductOut)
 def read_product(
     product_id: int, 
@@ -48,22 +64,6 @@ def delete_product(product_id: int, db: Session = Depends(get_db), admin: User =
     if not deleted:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"detail": "Product deleted"}
-
-@router.get("/search", response_model=List[schemas.ProductOut])
-def search_products(
-    query: str = None,
-    category_id: int = None,
-    min_price: float = None,
-    max_price: float = None,
-    db: Session = Depends(get_db)
-):
-    filters = {
-        "query": query,
-        "category_id": category_id,
-        "min_price": min_price,
-        "max_price": max_price
-    }
-    return crud.product.search_products(db=db, filters=filters)
 
 @router.post("/{product_id}/image")
 async def upload_product_image(

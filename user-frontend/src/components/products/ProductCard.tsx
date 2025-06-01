@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types/product';
 
@@ -14,16 +13,16 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     <div className="group relative">
       <Link href={`/products/${product.id}`} className="block">
         <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
-          {product.image_url ? (
-            <Image
-              src={product.image_url}
+          {product.thumbnail_url ? (
+            <img
+              src={`${process.env.NEXT_PUBLIC_API_URL}${product.thumbnail_url}`}
               alt={product.name}
               width={300}
               height={300}
               className="h-full w-full object-cover object-center group-hover:opacity-75"
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center">
+            <div className="h-full w-full flex items-center justify-center group-hover:opacity-75">
               <span className="text-gray-400">No image</span>
             </div>
           )}

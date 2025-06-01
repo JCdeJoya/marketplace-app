@@ -29,7 +29,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = '/products';
+        let url = '/products/search';
         const params = new URLSearchParams();
         
         if (searchQuery) params.append('query', searchQuery);
@@ -86,6 +86,7 @@ export default function ProductsPage() {
             value={priceRange.min}
             onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
             className="w-1/2 p-2 border rounded"
+            min={0}
           />
           <input
             type="number"
@@ -93,6 +94,7 @@ export default function ProductsPage() {
             value={priceRange.max}
             onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
             className="w-1/2 p-2 border rounded"
+            min={0}
           />
         </div>
       </div>

@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session
 from typing import Optional
 import json
 from fastapi import HTTPException
@@ -19,11 +20,20 @@ class CartService:
     def _get_cart_key(self, user_id: int) -> str:
         return f"cart:{user_id}"
 
-    async def get_cart(self, user_id: int) -> Cart:
+    async def get_cart(self, user_id: int, db: Session) -> Cart:
         cart_data = self.redis_client.get(self._get_cart_key(user_id))
         if not cart_data:
             return Cart()
-        return Cart.parse_raw(cart_data)
+
+        cart = Cart.parse_raw(cart_data)
+
+        # Enrich each cart item with product details
+        for item in cart.items:
+            product = get_product(db=db, product_id=item.product_id)
+            if product:
+                item.product = product
+
+        return cart
 
     async def add_item(self, user_id: int, item: CartItemCreate, db) -> Cart:
         # Get product details
@@ -31,13 +41,13 @@ class CartService:
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
 
-        cart = await self.get_cart(user_id)
+        cart = await self.get_cart(user_id, db)
         
         # Create new cart item
         new_item = CartItem(
             product_id=item.product_id,
             quantity=item.quantity,
-            unit_price=product.price
+            product=product,
         )
 
         # Update existing item or add new one
@@ -52,9 +62,43 @@ class CartService:
             cart.items.append(new_item)
 
         # Update total
-        cart.total = sum(item.quantity * item.unit_price for item in cart.items)
+        cart.total = sum(item.quantity * item.product.price for item in cart.items)
 
         # Save to Redis
+        self.redis_client.set(
+            self._get_cart_key(user_id),
+            cart.json(),
+            ex=self.expire_time
+        )
+
+        return cart
+    
+    async def clear_cart(self, user_id: int) -> None:
+        self.redis_client.delete(self._get_cart_key(user_id))
+
+    async def update_item_quantity(self, user_id: int, product_id: int, quantity: int) -> Cart:
+        cart_data = self.redis_client.get(self._get_cart_key(user_id))
+        if not cart_data:
+            raise HTTPException(status_code=404, detail="Cart not found")
+
+        cart = Cart.parse_raw(cart_data)
+
+        found = False
+        for item in cart.items:
+            if item.product_id == product_id:
+                if quantity <= 0:
+                    cart.items.remove(item)
+                else:
+                    item.quantity = quantity
+                found = True
+                break
+
+        if not found:
+            raise HTTPException(status_code=404, detail="Item not found in cart")
+
+        # Update total
+        cart.total = sum(i.quantity * i.unit_price for i in cart.items)
+
         self.redis_client.set(
             self._get_cart_key(user_id),
             cart.json(),
